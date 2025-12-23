@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Help by Sudarsan</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Tailwind Configuration with safety check
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        colors: {
+                            slate: { 850: '#1e293b', 950: '#020617' }
+                        },
+                        screens: { 'xs': '475px' }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons (Fixed URL) -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- CSS Styles -->
+    <style>
+        /* Smooth Gradient Animation */
+        @keyframes gradient-x {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+            background-size: 200% 200%;
+            animation: gradient-x 6s ease infinite;
+        }
+        
+        /* Loading Dots Animation */
+        .loading-dots:after {
+            content: ' .';
+            animation: dots 1s steps(5, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: ' .'; }
+            40% { content: ' ..'; }
+            60% { content: ' ...'; }
+            80%, 100% { content: ''; }
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(15, 23, 42, 0.9);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        /* Hide scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Dark mode transitions */
+        body, div, button, input, textarea, section, nav {
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- HEADER -->
+    <header class="bg-indigo-700 dark:bg-indigo-900 text-white shadow-lg sticky top-0 z-40 transition-colors duration-300">
+        <div class="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap justify-between items-center gap-y-3">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <div class="bg-white/20 p-1.5 sm:p-2 rounded-lg backdrop-blur-sm">
+                    <i data-lucide="helping-hand" class="w-5 h-5 sm:w-6 sm:h-6 text-white"></i>
+                </div>
+                <h1 class="text-lg sm:text-2xl font-bold tracking-tight whitespace-nowrap">Help by Sudarsan</h1>
+            </div>
+
+            <div class="order-3 w-full md:w-auto md:order-2 flex justify-center mt-2 md:mt-0">
+                <nav class="flex items-center space-x-1 bg-indigo-800/40 dark:bg-indigo-950/50 p-1 rounded-xl backdrop-blur-md border border-white/10">
+                    <button onclick="switchTab('home')" id="nav-home" class="px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-bold bg-white text-indigo-700 shadow-sm transition hover:scale-105">Home</button>
+                    <button onclick="switchTab('hub')" id="nav-hub" class="px-3 sm:px-4 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-indigo-100 hover:bg-white/10 hover:text-white transition flex items-center gap-1.5">
+                        <i data-lucide="grid" class="w-3 h-3 sm:w-4 sm:h-4"></i> <span class="whitespace-nowrap">Calculator Hub</span>
+                    </button>
+                </nav>
+            </div>
+            
+            <div class="flex items-center gap-2 md:order-3">
+                <button onclick="toggleTheme()" class="p-1.5 sm:p-2 text-indigo-100 hover:text-white hover:bg-indigo-600 dark:hover:bg-indigo-800 rounded-lg transition" title="Toggle Theme">
+                    <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
+                </button>
+                <button onclick="copyLink()" class="p-1.5 sm:p-2 text-indigo-100 hover:text-white hover:bg-indigo-600 dark:hover:bg-indigo-800 rounded-lg transition" title="Share Link">
+                    <i data-lucide="share-2" class="w-5 h-5"></i>
+                </button>
+                <button class="bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-800 dark:hover:bg-indigo-700 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition text-xs sm:text-sm font-medium shadow-md border border-indigo-500/50 whitespace-nowrap">
+                    Support
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- VIEW: HOME SECTION -->
+    <div id="view-home" class="flex-grow flex flex-col">
+        <!-- Fix: Changed 'md:h-[...]' to 'md:min-h-[...]' and 'h-[500px]' to 'min-h-[500px]' and added py-20 to prevent clipping -->
+        <section class="relative w-full min-h-[600px] md:min-h-[calc(100vh-80px)] flex flex-col justify-center items-center overflow-hidden bg-slate-900 py-20">
+            <!-- Background: Educational Grid Pattern -->
+            <div class="absolute inset-0 z-0 bg-slate-950">
+                <!-- Mathematical Grid -->
+                <div class="absolute inset-0 opacity-20" 
+                     style="background-image: linear-gradient(#6366f1 1px, transparent 1px), linear-gradient(90deg, #6366f1 1px, transparent 1px); background-size: 50px 50px;">
+                </div>
+                <!-- Radial Highlight -->
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/40 via-slate-950/80 to-slate-950"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="relative z-10 container mx-auto px-4 sm:px-6 text-center text-white">
+                <div class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-6 border border-indigo-500/30 text-indigo-200">
+                    Empower Your Learning Journey
+                </div>
+                <h1 class="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight drop-shadow-lg">
+                    Your Success Starts <br/> With <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300">Calculation</span>
+                </h1>
+                
+                <!-- Motivational Quote Card -->
+                <div class="max-w-xl mx-auto mt-4 sm:mt-8 bg-white/5 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-indigo-500/20 shadow-2xl transform hover:scale-105 transition duration-500 hover:bg-white/10">
+                    <i data-lucide="quote" class="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400 mb-4 mx-auto opacity-90"></i>
+                    <p class="text-lg sm:text-xl md:text-2xl font-serif italic text-slate-200 mb-4">
+                        "Mathematics is not about numbers, equations, computations, or algorithms: it is about understanding."
+                    </p>
+                    <p class="text-xs sm:text-sm font-bold text-cyan-400 tracking-wide uppercase">— William Paul Thurston</p>
+                </div>
+
+                <div class="mt-10 sm:mt-12">
+                    <p class="text-indigo-200 text-sm sm:text-base font-medium mb-4 animate-pulse">Thank you for visiting my page</p>
+                    <button onclick="switchTab('hub')" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-8 sm:py-4 sm:px-10 rounded-full shadow-lg transition transform hover:-translate-y-1 text-base sm:text-lg border border-indigo-400/30">
+                        Get Started <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+        <section class="bg-white dark:bg-slate-900 py-12 sm:py-16">
+            <div class="container mx-auto px-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 text-center">
+                    <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                        <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center text-indigo-600 dark:text-indigo-400 mx-auto mb-4"><i data-lucide="calculator"></i></div>
+                        <h3 class="text-xl font-bold mb-2">10+ Tools</h3>
+                        <p class="text-slate-600 dark:text-slate-400">From basic math to finance and health.</p>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                        <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400 mx-auto mb-4"><i data-lucide="sparkles"></i></div>
+                        <h3 class="text-xl font-bold mb-2">AI Powered</h3>
+                        <p class="text-slate-600 dark:text-slate-400">Smart assistants for math and finance.</p>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800 col-span-1 sm:col-span-2 md:col-span-1 border border-slate-100 dark:border-slate-700">
+                        <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400 mx-auto mb-4"><i data-lucide="moon"></i></div>
+                        <h3 class="text-xl font-bold mb-2">Dark Mode</h3>
+                        <p class="text-slate-600 dark:text-slate-400">Easy on the eyes, day or night.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- VIEW: CALCULATOR HUB -->
+    <div id="view-hub" class="hidden flex-grow flex-col">
+        <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 dark:from-indigo-800 dark:via-purple-800 dark:to-blue-800 animate-gradient text-white py-12 sm:py-16 transition-colors duration-300">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4">Calculator Hub</h2>
+                <p class="text-base sm:text-lg text-indigo-100 dark:text-indigo-200 max-w-2xl mx-auto">Explore our collection of tools designed to simplify your life.</p>
+            </div>
+        </div>
+
+        <main class="container mx-auto px-4 sm:px-6 py-8 sm:py-12 -mt-10 mb-12">
+            <div class="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                <!-- AI Math Tutor -->
+                <button onclick="openAIModal('math')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-2 border-indigo-100 dark:border-indigo-900/50 hover:border-indigo-400 dark:hover:border-indigo-500 flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-indigo-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">AI POWERED</div>
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-600 transition-colors duration-300"><i data-lucide="brain-circuit" class="w-7 h-7 sm:w-8 sm:h-8 text-indigo-600 dark:text-indigo-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">AI Math Tutor</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Solves word problems</p>
+                    <span class="mt-4 text-[10px] sm:text-xs font-semibold text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/50 px-2 py-1 rounded">✨ Try me</span>
+                </button>
+
+                <!-- AI Finance Guide -->
+                <button onclick="openAIModal('finance')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-2 border-emerald-100 dark:border-emerald-900/50 hover:border-emerald-400 dark:hover:border-emerald-500 flex flex-col items-center text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">AI POWERED</div>
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-emerald-50 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-emerald-600 dark:group-hover:bg-emerald-600 transition-colors duration-300"><i data-lucide="bot" class="w-7 h-7 sm:w-8 sm:h-8 text-emerald-600 dark:text-emerald-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">AI Finance Guide</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Ask about loans & tips</p>
+                    <span class="mt-4 text-[10px] sm:text-xs font-semibold text-emerald-600 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/50 px-2 py-1 rounded">✨ Ask now</span>
+                </button>
+
+                <!-- Basic Calculator -->
+                <button onclick="openCalculatorModal()" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-600 dark:group-hover:bg-blue-600 transition-colors duration-300"><i data-lucide="calculator" class="w-7 h-7 sm:w-8 sm:h-8 text-blue-600 dark:text-blue-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">Basic Calculator</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Standard arithmetic</p>
+                </button>
+
+                <!-- Scientific Calculator -->
+                <button onclick="openScientificModal()" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-purple-600 dark:group-hover:bg-purple-600 transition-colors duration-300"><i data-lucide="sigma" class="w-7 h-7 sm:w-8 sm:h-8 text-purple-600 dark:text-purple-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">Scientific</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Advanced math functions</p>
+                </button>
+
+                <!-- BMI Calculator -->
+                <button onclick="openFormTool('bmi')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-green-600 dark:group-hover:bg-green-600 transition-colors duration-300"><i data-lucide="activity" class="w-7 h-7 sm:w-8 sm:h-8 text-green-600 dark:text-green-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">BMI Calculator</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Body Mass Index</p>
+                </button>
+
+                <!-- Loan Calculator -->
+                <button onclick="openFormTool('loan')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-teal-600 dark:group-hover:bg-teal-600 transition-colors duration-300"><i data-lucide="landmark" class="w-7 h-7 sm:w-8 sm:h-8 text-teal-600 dark:text-teal-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">Loan Calculator</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Mortgage & EMI</p>
+                </button>
+
+                <!-- Age Calculator -->
+                <button onclick="openFormTool('age')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-orange-600 dark:group-hover:bg-orange-600 transition-colors duration-300"><i data-lucide="hourglass" class="w-7 h-7 sm:w-8 sm:h-8 text-orange-600 dark:text-orange-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">Age Calculator</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Exact age & days</p>
+                </button>
+
+                <!-- Discount Calculator -->
+                <button onclick="openFormTool('discount')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-pink-100 dark:bg-pink-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-pink-600 dark:group-hover:bg-pink-600 transition-colors duration-300"><i data-lucide="percent" class="w-7 h-7 sm:w-8 sm:h-8 text-pink-600 dark:text-pink-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">Discount</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Sale & savings</p>
+                </button>
+
+                <!-- Tip Calculator -->
+                <button onclick="openFormTool('tip')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-yellow-500 dark:group-hover:bg-yellow-500 transition-colors duration-300"><i data-lucide="coins" class="w-7 h-7 sm:w-8 sm:h-8 text-yellow-600 dark:text-yellow-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">Tip Calculator</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Bill splitting</p>
+                </button>
+
+                <!-- Currency -->
+                <button onclick="openFormTool('currency')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-cyan-100 dark:bg-cyan-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-cyan-600 dark:group-hover:bg-cyan-600 transition-colors duration-300"><i data-lucide="arrow-left-right" class="w-7 h-7 sm:w-8 sm:h-8 text-cyan-600 dark:text-cyan-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">Currency</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Live exchange rates</p>
+                </button>
+
+                <!-- GPA -->
+                <button onclick="openFormTool('gpa')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-red-600 dark:group-hover:bg-red-600 transition-colors duration-300"><i data-lucide="graduation-cap" class="w-7 h-7 sm:w-8 sm:h-8 text-red-600 dark:text-red-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">GPA</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Grade Point Average</p>
+                </button>
+
+                <!-- Date -->
+                <button onclick="openFormTool('date')" class="group bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-100 dark:border-slate-700 flex flex-col items-center text-center">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 bg-lime-100 dark:bg-lime-900/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-lime-600 dark:group-hover:bg-lime-600 transition-colors duration-300"><i data-lucide="calendar" class="w-7 h-7 sm:w-8 sm:h-8 text-lime-600 dark:text-lime-400 group-hover:text-white transition-colors"></i></div>
+                    <h3 class="font-bold text-base sm:text-lg text-slate-800 dark:text-slate-100">Date Calculator</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">Days between dates</p>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 dark:bg-slate-950 text-slate-400 py-8 text-center mt-auto border-t dark:border-slate-800 transition-colors duration-300">
+        <p>&copy; 2025 Help by Sudarsan. All rights reserved.</p>
+        <div class="flex justify-center space-x-4 mt-4">
+            <a href="#" class="hover:text-white transition"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+            <a href="#" class="hover:text-white transition"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+            <a href="#" class="hover:text-white transition"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+        </div>
+    </footer>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast">
+        <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+        <span id="toast-message">Notification</span>
+    </div>
+
+    <!-- MODAL: Basic Calculator Implementation (Responsive) -->
+    <div id="calculator-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden transform transition-all scale-100 border dark:border-slate-700">
+            <div class="bg-slate-900 dark:bg-slate-950 p-4 flex justify-between items-center">
+                <h3 class="text-white font-bold text-lg flex items-center gap-2">
+                    <i data-lucide="calculator" class="w-5 h-5"></i> Basic Calculator
+                </h3>
+                <button onclick="closeCalculatorModal()" class="text-slate-400 hover:text-white transition">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <div class="p-4 sm:p-6 bg-slate-100 dark:bg-slate-800">
+                <!-- Big Display -->
+                <div class="relative mb-4">
+                    <input type="text" id="calc-display" readonly 
+                        class="w-full h-20 sm:h-24 bg-white dark:bg-slate-900 rounded-lg border border-slate-300 dark:border-slate-700 text-right text-3xl sm:text-4xl font-mono p-4 text-slate-800 dark:text-white shadow-inner focus:outline-none transition-colors">
+                </div>
+
+                <!-- Toggle Controls -->
+                <div class="flex justify-between items-center mb-4 px-1">
+                    <button onclick="toggleHistory()" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-bold text-xs sm:text-sm flex items-center gap-2 transition bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1.5 rounded-full">
+                        <i data-lucide="history" class="w-4 h-4"></i> <span id="history-btn-text">History</span>
+                    </button>
+                    <button onclick="clearHistory()" id="clear-history-btn" class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-xs hidden font-medium">
+                        Clear All
+                    </button>
+                </div>
+                
+                <!-- Buttons Grid (Keypad) -->
+                <div id="calc-keypad" class="grid grid-cols-4 gap-2 sm:gap-3">
+                    <button onclick="clearDisplay()" class="col-span-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-bold py-2 sm:py-3 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition text-lg">AC</button>
+                    <button onclick="deleteLast()" class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2 sm:py-3 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition text-lg">DEL</button>
+                    <button onclick="appendOperator('/')" class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold py-2 sm:py-3 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/70 transition text-lg">÷</button>
+                    
+                    <button onclick="appendNumber('7')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition text-xl">7</button>
+                    <button onclick="appendNumber('8')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition text-xl">8</button>
+                    <button onclick="appendNumber('9')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition text-xl">9</button>
+                    <button onclick="appendOperator('*')" class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold py-2 sm:py-3 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/70 transition text-xl">×</button>
+                    
+                    <button onclick="appendNumber('4')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition text-xl">4</button>
+                    <button onclick="appendNumber('5')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition text-xl">5</button>
+                    <button onclick="appendNumber('6')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition text-xl">6</button>
+                    <button onclick="appendOperator('-')" class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold py-2 sm:py-3 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/70 transition text-xl">-</button>
+                    
+                    <button onclick="appendNumber('1')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition text-xl">1</button>
+                    <button onclick="appendNumber('2')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition text-xl">2</button>
+                    <button onclick="appendNumber('3')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition text-xl">3</button>
+                    <button onclick="appendOperator('+')" class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold py-2 sm:py-3 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900/70 transition text-xl">+</button>
+                    
+                    <button onclick="appendNumber('0')" class="col-span-2 bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition text-xl">0</button>
+                    <button onclick="appendNumber('.')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition text-xl">.</button>
+                    <button onclick="calculateResult()" class="bg-indigo-600 dark:bg-indigo-700 text-white font-bold py-2 sm:py-3 rounded-lg shadow-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition text-xl">=</button>
+                </div>
+
+                <!-- History View (Hidden by default) -->
+                <div id="calc-history-view" class="hidden h-[340px] overflow-y-auto no-scrollbar pr-1">
+                    <div id="history-list" class="space-y-2">
+                        <!-- JS renders items here -->
+                        <div class="text-center text-slate-400 mt-10 italic">No history yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Scientific Calculator (Responsive Grid Fix) -->
+    <div id="scientific-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden transform transition-all scale-100 border dark:border-slate-700">
+            <div class="bg-purple-900 dark:bg-purple-950 p-4 flex justify-between items-center">
+                <h3 class="text-white font-bold text-lg flex items-center gap-2">
+                    <i data-lucide="sigma" class="w-5 h-5"></i> Scientific Calculator
+                </h3>
+                <button onclick="closeScientificModal()" class="text-purple-200 hover:text-white transition">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <div class="p-4 sm:p-6 bg-slate-100 dark:bg-slate-800">
+                <input type="text" id="sci-display" readonly 
+                    class="w-full h-16 bg-white dark:bg-slate-900 rounded-lg border border-slate-300 dark:border-slate-700 text-right text-2xl sm:text-3xl font-mono p-4 mb-4 text-slate-800 dark:text-white shadow-inner focus:outline-none transition-colors">
+                
+                <div class="grid grid-cols-5 gap-1.5 sm:gap-2">
+                    <!-- Scientific Keys -->
+                    <button onclick="appendSciFunc('sin(')" class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 font-bold py-2 sm:py-3 rounded hover:bg-purple-200 dark:hover:bg-purple-900/50 text-xs sm:text-sm">sin</button>
+                    <button onclick="appendSciFunc('cos(')" class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 font-bold py-2 sm:py-3 rounded hover:bg-purple-200 dark:hover:bg-purple-900/50 text-xs sm:text-sm">cos</button>
+                    <button onclick="appendSciFunc('tan(')" class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 font-bold py-2 sm:py-3 rounded hover:bg-purple-200 dark:hover:bg-purple-900/50 text-xs sm:text-sm">tan</button>
+                    <button onclick="appendSciFunc('sqrt(')" class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 font-bold py-2 sm:py-3 rounded hover:bg-purple-200 dark:hover:bg-purple-900/50 text-xs sm:text-sm">√</button>
+                    <button onclick="clearSciDisplay()" class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-bold py-2 sm:py-3 rounded hover:bg-red-200 dark:hover:bg-red-900/50 text-xs sm:text-sm">AC</button>
+                    
+                    <button onclick="appendSciFunc('log(')" class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 font-bold py-2 sm:py-3 rounded hover:bg-purple-200 dark:hover:bg-purple-900/50 text-xs sm:text-sm">log</button>
+                    <button onclick="appendSciFunc('ln(')" class="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 font-bold py-2 sm:py-3 rounded hover:bg-purple-200 dark:hover:bg-purple-900/50 text-xs sm:text-sm">ln</button>
+                    <button onclick="appendSciNumber('(')" class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2 sm:py-3 rounded hover:bg-slate-300 dark:hover:bg-slate-600 text-xs sm:text-sm">(</button>
+                    <button onclick="appendSciNumber(')')" class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2 sm:py-3 rounded hover:bg-slate-300 dark:hover:bg-slate-600 text-xs sm:text-sm">)</button>
+                    <button onclick="deleteSciLast()" class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-2 sm:py-3 rounded hover:bg-slate-300 dark:hover:bg-slate-600 text-xs sm:text-sm">DEL</button>
+
+                    <!-- Standard Keys -->
+                    <button onclick="appendSciNumber('7')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded shadow-sm text-sm sm:text-base">7</button>
+                    <button onclick="appendSciNumber('8')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded shadow-sm text-sm sm:text-base">8</button>
+                    <button onclick="appendSciNumber('9')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded shadow-sm text-sm sm:text-base">9</button>
+                    <button onclick="appendSciOperator('*')" class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold py-2 sm:py-3 rounded text-sm sm:text-base">×</button>
+                    <button onclick="appendSciOperator('/')" class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold py-2 sm:py-3 rounded text-sm sm:text-base">÷</button>
+                    
+                    <button onclick="appendSciNumber('4')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded shadow-sm text-sm sm:text-base">4</button>
+                    <button onclick="appendSciNumber('5')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded shadow-sm text-sm sm:text-base">5</button>
+                    <button onclick="appendSciNumber('6')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded shadow-sm text-sm sm:text-base">6</button>
+                    <button onclick="appendSciOperator('+')" class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold py-2 sm:py-3 rounded text-sm sm:text-base">+</button>
+                    <button onclick="appendSciOperator('-')" class="bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-bold py-2 sm:py-3 rounded text-sm sm:text-base">-</button>
+                    
+                    <button onclick="appendSciNumber('1')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded shadow-sm text-sm sm:text-base">1</button>
+                    <button onclick="appendSciNumber('2')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded shadow-sm text-sm sm:text-base">2</button>
+                    <button onclick="appendSciNumber('3')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded shadow-sm text-sm sm:text-base">3</button>
+                    <button onclick="appendSciNumber('0')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded shadow-sm text-sm sm:text-base">0</button>
+                    <button onclick="appendSciNumber('.')" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-white font-bold py-2 sm:py-3 rounded shadow-sm text-sm sm:text-base">.</button>
+
+                    <button onclick="calculateSciResult()" class="col-span-5 bg-purple-600 text-white font-bold py-2 sm:py-3 rounded-lg shadow-lg hover:bg-purple-700 mt-2 text-sm sm:text-base">=</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Universal Form Tools -->
+    <div id="generic-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden transform transition-all scale-100 flex flex-col max-h-[90vh] border dark:border-slate-700">
+            <div id="generic-header" class="bg-slate-800 p-4 flex justify-between items-center text-white">
+                <div class="flex items-center gap-2">
+                    <i id="generic-icon" data-lucide="tool" class="w-5 h-5"></i>
+                    <h3 id="generic-title" class="font-bold text-lg">Tool</h3>
+                </div>
+                <button onclick="closeGenericModal()" class="text-white/80 hover:text-white transition">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <div id="generic-content" class="p-4 sm:p-6 bg-slate-50 dark:bg-slate-800 flex-grow overflow-y-auto no-scrollbar">
+                <!-- Content Injected Here -->
+            </div>
+
+            <!-- Result Section for Generic Tools -->
+            <div id="generic-result-area" class="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 hidden">
+                <div class="text-sm text-slate-500 dark:text-slate-400 mb-1">Result</div>
+                <div id="generic-result-value" class="text-2xl font-bold text-slate-800 dark:text-slate-100"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: AI Tools -->
+    <div id="ai-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden transform transition-all scale-100 flex flex-col max-h-[90vh] border dark:border-slate-700">
+            
+            <!-- AI Header -->
+            <div id="ai-header" class="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex justify-between items-center text-white">
+                <div class="flex items-center gap-2">
+                    <i id="ai-icon" data-lucide="sparkles" class="w-5 h-5"></i>
+                    <h3 id="ai-title" class="font-bold text-lg">AI Tool</h3>
+                </div>
+                <button onclick="closeAIModal()" class="text-white/80 hover:text-white transition">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <!-- AI Content -->
+            <div class="flex-grow overflow-y-auto p-4 sm:p-6 bg-slate-50 dark:bg-slate-800" id="ai-response-area">
+                <div class="text-center text-slate-500 dark:text-slate-400 mt-10">
+                    <i data-lucide="message-square-dashed" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                    <p id="ai-placeholder-text">How can I help you today?</p>
+                </div>
+            </div>
+
+            <!-- AI Input Area -->
+            <div class="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
+                <div class="relative">
+                    <textarea id="ai-input" rows="2" placeholder="Type your question here..." class="w-full bg-slate-100 dark:bg-slate-700 rounded-xl border-none focus:ring-2 focus:ring-indigo-500 p-3 pr-12 resize-none text-slate-700 dark:text-white placeholder-slate-400"></textarea>
+                    <button onclick="callGemini()" class="absolute right-2 bottom-2 bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-lg transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed" id="ai-send-btn">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-center text-slate-400 dark:text-slate-500 mt-2">Powered by Google Gemini ✨</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Initialize Icons Safely
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        } else {
+            console.warn('Lucide icons failed to load');
+            // Basic text fallback or retry logic could go here
+        }
+
+        // --- NAVIGATION TABS LOGIC ---
+        function switchTab(tabName) {
+            const homeView = document.getElementById('view-home');
+            const hubView = document.getElementById('view-hub');
+            const navHome = document.getElementById('nav-home');
+            const navHub = document.getElementById('nav-hub');
+
+            if (tabName === 'home') {
+                homeView.classList.remove('hidden');
+                hubView.classList.add('hidden');
+                hubView.classList.remove('flex');
+                
+                // Update Button Styles
+                navHome.className = "px-4 py-1.5 rounded-lg text-sm font-bold bg-white text-indigo-700 shadow-sm transition hover:scale-105";
+                navHub.className = "px-3 py-1.5 rounded-lg text-sm font-medium text-indigo-100 hover:bg-white/10 hover:text-white transition flex items-center gap-2";
+            } else {
+                homeView.classList.add('hidden');
+                hubView.classList.remove('hidden');
+                hubView.classList.add('flex');
+
+                // Update Button Styles
+                navHub.className = "px-4 py-1.5 rounded-lg text-sm font-bold bg-white text-indigo-700 shadow-sm transition hover:scale-105 flex items-center gap-2";
+                navHome.className = "px-3 py-1.5 rounded-lg text-sm font-medium text-indigo-100 hover:bg-white/10 hover:text-white transition";
+            }
+        }
+
+        // --- THEME LOGIC ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                if(icon) icon.setAttribute('data-lucide', 'moon');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                if(icon) icon.setAttribute('data-lucide', 'sun');
+                localStorage.setItem('theme', 'dark');
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        // Check system preference or saved theme on load
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            // Defer icon update for when DOM is ready
+            document.addEventListener('DOMContentLoaded', () => {
+                const icon = document.getElementById('theme-icon');
+                if(icon) icon.setAttribute('data-lucide', 'sun');
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            });
+        }
+
+        // --- GLOBAL UTILS ---
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msgSpan = document.getElementById('toast-message');
+            msgSpan.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        function copyLink() {
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = window.location.href;
+            dummy.select();
+            try {
+                document.execCommand('copy');
+                showToast("Link copied to clipboard!");
+            } catch (err) {
+                showToast("Failed to copy link");
+            }
+            document.body.removeChild(dummy);
+        }
+
+        // --- GENERIC TOOL MODAL SYSTEM ---
+        const toolTemplates = {
+            'bmi': {
+                title: 'BMI Calculator',
+                icon: 'activity',
+                colorClass: 'bg-green-600',
+                html: `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Weight (kg)</label>
+                            <input type="number" id="bmi-weight" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none dark:bg-slate-700 dark:text-white" placeholder="e.g. 70">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Height (cm)</label>
+                            <input type="number" id="bmi-height" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none dark:bg-slate-700 dark:text-white" placeholder="e.g. 175">
+                        </div>
+                        <button onclick="calculateBMI()" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition">Calculate BMI</button>
+                    </div>
+                `
+            },
+            'loan': {
+                title: 'Loan Calculator',
+                icon: 'landmark',
+                colorClass: 'bg-teal-600',
+                html: `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Loan Amount</label>
+                            <input type="number" id="loan-amount" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none dark:bg-slate-700 dark:text-white" placeholder="e.g. 100000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Interest Rate (%)</label>
+                            <input type="number" id="loan-rate" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none dark:bg-slate-700 dark:text-white" placeholder="e.g. 7.5">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Loan Term (Years)</label>
+                            <input type="number" id="loan-term" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none dark:bg-slate-700 dark:text-white" placeholder="e.g. 15">
+                        </div>
+                        <button onclick="calculateLoan()" class="w-full bg-teal-600 text-white font-bold py-3 rounded-lg hover:bg-teal-700 transition">Calculate Monthly Payment</button>
+                    </div>
+                `
+            },
+            'age': {
+                title: 'Age Calculator',
+                icon: 'hourglass',
+                colorClass: 'bg-orange-600',
+                html: `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Date of Birth</label>
+                            <input type="date" id="age-dob" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none dark:bg-slate-700 dark:text-white">
+                        </div>
+                        <button onclick="calculateAge()" class="w-full bg-orange-600 text-white font-bold py-3 rounded-lg hover:bg-orange-700 transition">Calculate Age</button>
+                    </div>
+                `
+            },
+            'discount': {
+                title: 'Discount Calculator',
+                icon: 'percent',
+                colorClass: 'bg-pink-600',
+                html: `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Original Price</label>
+                            <input type="number" id="disc-price" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:outline-none dark:bg-slate-700 dark:text-white" placeholder="e.g. 100">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Discount (%)</label>
+                            <input type="number" id="disc-percent" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-pink-500 focus:outline-none dark:bg-slate-700 dark:text-white" placeholder="e.g. 20">
+                        </div>
+                        <button onclick="calculateDiscount()" class="w-full bg-pink-600 text-white font-bold py-3 rounded-lg hover:bg-pink-700 transition">Calculate Final Price</button>
+                    </div>
+                `
+            },
+            'tip': {
+                title: 'Tip Calculator',
+                icon: 'coins',
+                colorClass: 'bg-yellow-600',
+                html: `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Bill Amount</label>
+                            <input type="number" id="tip-bill" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:outline-none dark:bg-slate-700 dark:text-white" placeholder="e.g. 50">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tip Percentage (%)</label>
+                            <input type="number" id="tip-percent" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:outline-none dark:bg-slate-700 dark:text-white" placeholder="e.g. 15">
+                        </div>
+                        <button onclick="calculateTip()" class="w-full bg-yellow-600 text-white font-bold py-3 rounded-lg hover:bg-yellow-700 transition">Calculate Total</button>
+                    </div>
+                `
+            },
+            'currency': {
+                title: 'Currency Converter',
+                icon: 'arrow-left-right',
+                colorClass: 'bg-cyan-600',
+                html: `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Amount</label>
+                            <input type="number" id="curr-amount" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none dark:bg-slate-700 dark:text-white" placeholder="e.g. 1">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">From</label>
+                                <select id="curr-from" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg dark:bg-slate-700 dark:text-white">
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                    <option value="INR">INR</option>
+                                    <option value="JPY">JPY</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">To</label>
+                                <select id="curr-to" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg dark:bg-slate-700 dark:text-white">
+                                    <option value="INR">INR</option>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                    <option value="JPY">JPY</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="calculateCurrency()" class="w-full bg-cyan-600 text-white font-bold py-3 rounded-lg hover:bg-cyan-700 transition">Convert</button>
+                        <p class="text-xs text-slate-400 dark:text-slate-500 text-center">Using approximate static rates for demo.</p>
+                    </div>
+                `
+            },
+            'gpa': {
+                title: 'GPA Calculator',
+                icon: 'graduation-cap',
+                colorClass: 'bg-red-600',
+                html: `
+                    <div class="space-y-4">
+                        <p class="text-sm text-slate-600 dark:text-slate-400">Enter your grades separated by spaces (e.g. A A B+ C A-)</p>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Grades</label>
+                            <input type="text" id="gpa-grades" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none dark:bg-slate-700 dark:text-white" placeholder="A B A C+">
+                        </div>
+                        <button onclick="calculateGPA()" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition">Calculate GPA</button>
+                    </div>
+                `
+            },
+            'date': {
+                title: 'Date Calculator',
+                icon: 'calendar',
+                colorClass: 'bg-lime-600',
+                html: `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Start Date</label>
+                            <input type="date" id="date-start" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:outline-none dark:bg-slate-700 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">End Date</label>
+                            <input type="date" id="date-end" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-lime-500 focus:outline-none dark:bg-slate-700 dark:text-white">
+                        </div>
+                        <button onclick="calculateDate()" class="w-full bg-lime-600 text-white font-bold py-3 rounded-lg hover:bg-lime-700 transition">Calculate Difference</button>
+                    </div>
+                `
+            }
+        };
+
+        function openFormTool(toolId) {
+            const modal = document.getElementById('generic-modal');
+            const header = document.getElementById('generic-header');
+            const title = document.getElementById('generic-title');
+            const content = document.getElementById('generic-content');
+            const resultArea = document.getElementById('generic-result-area');
+            const tool = toolTemplates[toolId];
+
+            if (!tool) return;
+
+            // Reset UI
+            title.textContent = tool.title;
+            header.className = `${tool.colorClass} p-4 flex justify-between items-center text-white`;
+            content.innerHTML = tool.html;
+            resultArea.classList.add('hidden');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Re-init icons inside modal
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function closeGenericModal() {
+            const modal = document.getElementById('generic-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function showResult(text, subtext = '') {
+            const area = document.getElementById('generic-result-area');
+            const val = document.getElementById('generic-result-value');
+            val.innerHTML = text + (subtext ? `<div class="text-sm font-normal text-slate-500 dark:text-slate-400 mt-1">${subtext}</div>` : '');
+            area.classList.remove('hidden');
+        }
+
+        // --- CALCULATION LOGIC ---
+
+        function calculateBMI() {
+            const w = parseFloat(document.getElementById('bmi-weight').value);
+            const h = parseFloat(document.getElementById('bmi-height').value) / 100; // convert cm to m
+            if (!w || !h) return showToast("Please enter valid numbers");
+            
+            const bmi = (w / (h * h)).toFixed(1);
+            let cat = '';
+            if (bmi < 18.5) cat = 'Underweight';
+            else if (bmi < 25) cat = 'Normal weight';
+            else if (bmi < 30) cat = 'Overweight';
+            else cat = 'Obese';
+            
+            showResult(bmi, `Category: ${cat}`);
+        }
+
+        function calculateLoan() {
+            const p = parseFloat(document.getElementById('loan-amount').value);
+            const r = parseFloat(document.getElementById('loan-rate').value) / 100 / 12;
+            const n = parseFloat(document.getElementById('loan-term').value) * 12;
+            
+            if (!p || !r || !n) return showToast("Please enter valid numbers");
+
+            // EMI formula: P * r * (1 + r)^n / ((1 + r)^n - 1)
+            const emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            
+            showResult(emi.toFixed(2), "Monthly Payment");
+        }
+
+        function calculateAge() {
+            const dobVal = document.getElementById('age-dob').value;
+            if (!dobVal) return showToast("Please select a date");
+            
+            const dob = new Date(dobVal);
+            const now = new Date();
+            
+            if (dob > now) return showToast("Birth date cannot be in future");
+
+            let years = now.getFullYear() - dob.getFullYear();
+            let months = now.getMonth() - dob.getMonth();
+            let days = now.getDate() - dob.getDate();
+
+            // Adjust for negative days (borrow days from previous month)
+            if (days < 0) {
+                months--;
+                const lastMonthDate = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += lastMonthDate.getDate();
+            }
+
+            // Adjust for negative months (borrow from previous year)
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            
+            // Total days calculation for reference
+            const diff = now - dob;
+            const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            showResult(`${years} Years, ${months} Months, ${days} Days`, `Total living days: ${totalDays}`);
+        }
+
+        function calculateDiscount() {
+            const price = parseFloat(document.getElementById('disc-price').value);
+            const disc = parseFloat(document.getElementById('disc-percent').value);
+            if (!price || (!disc && disc !== 0)) return showToast("Invalid input");
+            
+            const saved = price * (disc / 100);
+            const final = price - saved;
+            
+            showResult(final.toFixed(2), `You save: ${saved.toFixed(2)}`);
+        }
+
+        function calculateTip() {
+            const bill = parseFloat(document.getElementById('tip-bill').value);
+            const tipP = parseFloat(document.getElementById('tip-percent').value);
+            if (!bill || (!tipP && tipP !== 0)) return showToast("Invalid input");
+            
+            const tipAmt = bill * (tipP / 100);
+            const total = bill + tipAmt;
+            
+            showResult(total.toFixed(2), `Tip Amount: ${tipAmt.toFixed(2)}`);
+        }
+
+        function calculateCurrency() {
+            const amt = parseFloat(document.getElementById('curr-amount').value);
+            const from = document.getElementById('curr-from').value;
+            const to = document.getElementById('curr-to').value;
+            
+            if (!amt) return showToast("Enter amount");
+
+            // Mock Rates (Base USD)
+            const rates = { 'USD': 1, 'EUR': 0.92, 'GBP': 0.79, 'INR': 83.5, 'JPY': 150 };
+            
+            // Convert to USD first, then to Target
+            const inUSD = amt / rates[from];
+            const result = inUSD * rates[to];
+            
+            showResult(`${result.toFixed(2)} ${to}`);
+        }
+
+        function calculateGPA() {
+            const str = document.getElementById('gpa-grades').value.toUpperCase();
+            if (!str) return showToast("Enter grades");
+            
+            const grades = str.match(/[A-F][+-]?/g);
+            if (!grades) return showToast("No valid grades found");
+
+            const map = { 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7, 'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D+': 1.3, 'D': 1.0, 'F': 0 };
+            
+            let total = 0;
+            let count = 0;
+            
+            grades.forEach(g => {
+                if (map.hasOwnProperty(g)) {
+                    total += map[g];
+                    count++;
+                }
+            });
+            
+            if (count === 0) return showResult("0.0");
+            showResult((total / count).toFixed(2), `Based on ${count} grades`);
+        }
+
+        function calculateDate() {
+            const s = document.getElementById('date-start').value;
+            const e = document.getElementById('date-end').value;
+            if (!s || !e) return showToast("Select both dates");
+            
+            const diff = Math.abs(new Date(e) - new Date(s));
+            const days = Math.ceil(diff / (1000 * 60 * 60 * 24)); 
+            
+            showResult(`${days} Days`);
+        }
+
+        // --- SCIENTIFIC CALCULATOR ---
+        const sciModal = document.getElementById('scientific-modal');
+        const sciDisplay = document.getElementById('sci-display');
+        let sciInput = '';
+
+        function openScientificModal() {
+            sciModal.classList.remove('hidden');
+            sciModal.classList.add('flex');
+            clearSciDisplay();
+        }
+
+        function closeScientificModal() {
+            sciModal.classList.add('hidden');
+            sciModal.classList.remove('flex');
+        }
+
+        function appendSciNumber(val) { sciInput += val; updateSciDisplay(); }
+        function appendSciOperator(val) { sciInput += val; updateSciDisplay(); }
+        function appendSciFunc(val) { sciInput += val; updateSciDisplay(); }
+        
+        function clearSciDisplay() { sciInput = ''; updateSciDisplay(); }
+        function deleteSciLast() { sciInput = sciInput.slice(0, -1); updateSciDisplay(); }
+        function updateSciDisplay() { sciDisplay.value = sciInput; }
+
+        function calculateSciResult() {
+            try {
+                // Sanitize and prepare string for eval (replace math functions)
+                let evalStr = sciInput
+                    .replace(/sin/g, 'Math.sin')
+                    .replace(/cos/g, 'Math.cos')
+                    .replace(/tan/g, 'Math.tan')
+                    .replace(/sqrt/g, 'Math.sqrt')
+                    .replace(/log/g, 'Math.log10')
+                    .replace(/ln/g, 'Math.log');
+                
+                const result = eval(evalStr);
+                sciInput = String(result);
+                updateSciDisplay();
+            } catch (e) {
+                sciInput = 'Error';
+                updateSciDisplay();
+            }
+        }
+
+        // --- GEMINI API INTEGRATION ---
+        
+        let currentMode = 'math'; // 'math' or 'finance'
+        const apiKey = ""; // API Key provided by environment
+
+        function openAIModal(mode) {
+            currentMode = mode;
+            const modal = document.getElementById('ai-modal');
+            const title = document.getElementById('ai-title');
+            const header = document.getElementById('ai-header');
+            const responseArea = document.getElementById('ai-response-area');
+            const input = document.getElementById('ai-input');
+
+            // Reset Chat
+            responseArea.innerHTML = `
+                <div class="text-center text-slate-500 dark:text-slate-400 mt-10">
+                    <i data-lucide="message-square-dashed" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                    <p>${mode === 'math' ? 'Enter a math problem to solve.' : 'Ask a financial question.'}</p>
+                </div>
+            `;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            input.value = '';
+
+            if (mode === 'math') {
+                title.textContent = "AI Math Tutor";
+                header.className = "bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex justify-between items-center text-white";
+            } else {
+                title.textContent = "AI Finance Guide";
+                header.className = "bg-gradient-to-r from-emerald-600 to-teal-600 p-4 flex justify-between items-center text-white";
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            input.focus();
+        }
+
+        function closeAIModal() {
+            document.getElementById('ai-modal').classList.add('hidden');
+            document.getElementById('ai-modal').classList.remove('flex');
+        }
+
+        async function callGemini() {
+            const input = document.getElementById('ai-input');
+            const promptText = input.value.trim();
+            if (!promptText) return;
+
+            const responseArea = document.getElementById('ai-response-area');
+            const sendBtn = document.getElementById('ai-send-btn');
+
+            const userMsg = document.createElement('div');
+            userMsg.className = "flex justify-end mb-4";
+            userMsg.innerHTML = `<div class="bg-slate-200 text-slate-800 rounded-2xl rounded-tr-none py-2 px-4 max-w-[80%]">${promptText}</div>`;
+            
+            if (responseArea.querySelector('.text-center')) {
+                responseArea.innerHTML = '';
+            }
+            responseArea.appendChild(userMsg);
+            input.value = '';
+            responseArea.scrollTop = responseArea.scrollHeight;
+
+            const loadingMsg = document.createElement('div');
+            loadingMsg.className = "flex justify-start mb-4";
+            loadingMsg.innerHTML = `<div class="bg-white border border-slate-200 text-slate-500 rounded-2xl rounded-tl-none py-2 px-4 shadow-sm loading-dots">Thinking</div>`;
+            responseArea.appendChild(loadingMsg);
+            responseArea.scrollTop = responseArea.scrollHeight;
+
+            sendBtn.disabled = true;
+
+            let systemInstruction = "";
+            if (currentMode === 'math') {
+                systemInstruction = "You are a friendly and helpful math tutor. Solve the user's math problem step-by-step. Use clear formatting. If the input is not related to math, politely redirect them.";
+            } else {
+                systemInstruction = "You are a wise financial advisor. Answer questions about loans, savings, budgeting, and interest rates clearly and concisely. If the input is not related to finance, politely redirect them.";
+            }
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptText }] }],
+                        systemInstruction: { parts: [{ text: systemInstruction }] }
+                    })
+                });
+
+                if (!response.ok) throw new Error('API Error');
+
+                const data = await response.json();
+                const aiText = data.candidates[0].content.parts[0].text;
+
+                responseArea.removeChild(loadingMsg);
+                
+                const botMsg = document.createElement('div');
+                botMsg.className = "flex justify-start mb-4";
+                const formattedText = aiText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+
+                botMsg.innerHTML = `
+                    <div class="bg-white border border-slate-200 text-slate-800 rounded-2xl rounded-tl-none py-3 px-4 shadow-sm max-w-[90%] leading-relaxed">
+                        ${formattedText}
+                    </div>
+                `;
+                responseArea.appendChild(botMsg);
+
+            } catch (error) {
+                responseArea.removeChild(loadingMsg);
+                const errorMsg = document.createElement('div');
+                errorMsg.className = "flex justify-start mb-4";
+                errorMsg.innerHTML = `<div class="bg-red-50 text-red-600 rounded-2xl rounded-tl-none py-2 px-4 text-sm">Sorry, I encountered an error. Please try again.</div>`;
+                responseArea.appendChild(errorMsg);
+                console.error(error);
+            } finally {
+                sendBtn.disabled = false;
+                responseArea.scrollTop = responseArea.scrollHeight;
+            }
+        }
+
+        document.getElementById('ai-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                callGemini();
+            }
+        });
+
+        // --- EXISTING BASIC CALCULATOR LOGIC ---
+        const calcModal = document.getElementById('calculator-modal');
+        const display = document.getElementById('calc-display');
+        let currentInput = '';
+        
+        // History Logic
+        let calcHistory = [];
+        let isHistoryView = false;
+
+        function openCalculatorModal() { calcModal.classList.remove('hidden'); calcModal.classList.add('flex'); clearDisplay(); }
+        function closeCalculatorModal() { calcModal.classList.add('hidden'); calcModal.classList.remove('flex'); }
+        function updateDisplay() { display.value = currentInput || '0'; }
+        
+        function appendNumber(num) { currentInput += num; updateDisplay(); }
+        function appendOperator(op) { 
+            const lastChar = currentInput.slice(-1);
+            if (['+', '-', '*', '/'].includes(lastChar)) return; 
+            currentInput += op; updateDisplay(); 
+        }
+        function clearDisplay() { currentInput = ''; updateDisplay(); }
+        function deleteLast() { currentInput = currentInput.slice(0, -1); updateDisplay(); }
+        
+        function calculateResult() {
+            try {
+                const expr = currentInput;
+                if (!expr) return;
+                
+                const result = eval(currentInput);
+                const resultStr = String(result);
+                
+                // Add to history
+                addToHistory(expr, resultStr);
+                
+                currentInput = resultStr;
+                updateDisplay();
+            } catch (e) {
+                currentInput = 'Error';
+                updateDisplay();
+            }
+        }
+
+        // History Functions
+        function toggleHistory() {
+            const keypad = document.getElementById('calc-keypad');
+            const historyView = document.getElementById('calc-history-view');
+            const btnText = document.getElementById('history-btn-text');
+            const clearBtn = document.getElementById('clear-history-btn');
+
+            isHistoryView = !isHistoryView;
+
+            if (isHistoryView) {
+                keypad.classList.add('hidden');
+                historyView.classList.remove('hidden');
+                btnText.textContent = "Back to Keypad";
+                clearBtn.classList.remove('hidden');
+            } else {
+                keypad.classList.remove('hidden');
+                historyView.classList.add('hidden');
+                btnText.textContent = "History";
+                clearBtn.classList.add('hidden');
+            }
+        }
+
+        function addToHistory(expression, result) {
+            calcHistory.unshift({ expr: expression, res: result });
+            if (calcHistory.length > 20) calcHistory.pop(); // Keep last 20
+            renderHistory();
+        }
+
+        function clearHistory() {
+            calcHistory = [];
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            if (calcHistory.length === 0) {
+                list.innerHTML = '<div class="text-center text-slate-400 mt-10 italic">No history yet</div>';
+                return;
+            }
+
+            list.innerHTML = calcHistory.map((item, index) => `
+                <div onclick="loadHistoryItem('${item.res}')" class="bg-white border border-slate-200 p-3 rounded-lg cursor-pointer hover:bg-slate-50 hover:border-indigo-300 transition group">
+                    <div class="text-xs text-slate-500 mb-1 text-right font-mono">${item.expr} =</div>
+                    <div class="text-xl font-bold text-slate-800 text-right font-mono group-hover:text-indigo-600">${item.res}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadHistoryItem(result) {
+            currentInput = result;
+            updateDisplay();
+            // Switch back to keypad automatically
+            toggleHistory();
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === calcModal) closeCalculatorModal();
+            if (e.target === document.getElementById('ai-modal')) closeAIModal();
+            if (e.target === document.getElementById('scientific-modal')) closeScientificModal();
+            if (e.target === document.getElementById('generic-modal')) closeGenericModal();
+        });
+    </script>
+</body>
+</html>
